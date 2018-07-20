@@ -329,20 +329,24 @@ def batch_folding_test_cpp(X):
                                   byref(p_val), byref(phi), byref(time))
     return unimodal.value, p_val.value, phi.value, time.value
 
+def main():
+    N = 20000
+    X = np.random.normal(0, 1, N)
+    print(batch_folding_test_cpp(X))
+    print(batch_folding_test(X))
+    
+    sf = StreamFolding(N)
+    for x in X.reshape(-1, 1):
+        sf.update(x)
+        
+    print(sf.folding_test())
 
-N = 20000
-X = np.random.normal(0, 1, N)
-print(batch_folding_test_cpp(X))
-print(batch_folding_test(X))
+    N = 200000
+    X = np.random.multivariate_normal([0, 0], [[1, 0.5], [0.5, 1]], N).T
+    X = np.random.normal(0, 1, (2, N))
+    print(batch_folding_test(X))
+    print(batch_folding_test_cpp(X))
 
-sf = StreamFolding(N)
-for x in X.reshape(-1, 1):
-    sf.update(x)
 
-print(sf.folding_test())
-
-N = 200000
-X = np.random.multivariate_normal([0, 0], [[1, 0.5], [0.5, 1]], N).T
-X = np.random.normal(0, 1, (2, N))
-print(batch_folding_test(X))
-print(batch_folding_test_cpp(X))
+if __name__ == "__main__":
+    main()
